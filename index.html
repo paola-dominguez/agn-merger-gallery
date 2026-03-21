@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merger Simulation Projection Library</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; }
+    header { padding: 1.5rem 2rem; background: #1a1a2e; border-bottom: 1px solid #333; }
+    header h1 { font-size: 1.4rem; }
+    header p  { font-size: 0.85rem; color: #aaa; margin-top: 0.3rem; }
+    #controls {
+      display: flex; flex-wrap: wrap; gap: 0.8rem;
+      padding: 1rem 2rem; background: #16213e;
+      border-bottom: 1px solid #333;
+    }
+    #controls label { font-size: 0.8rem; color: #aaa; display: block; margin-bottom: 2px; }
+    #controls select {
+      background: #0f3460; color: #eee; border: 1px solid #444;
+      border-radius: 4px; padding: 4px 8px; font-size: 0.85rem;
+    }
+    #count { padding: 0.5rem 2rem; font-size: 0.8rem; color: #888; }
+    #gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      padding: 1rem 2rem 3rem;
+    }
+    .card {
+      background: #1a1a2e; border-radius: 6px; overflow: hidden;
+      transition: transform 0.15s;
+    }
+    .card:hover { transform: scale(1.02); }
+    .card img { width: 100%; display: block; }
+    .card .caption {
+      font-size: 0.68rem; color: #aaa;
+      padding: 0.4rem 0.5rem 0.6rem; line-height: 1.4;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Merger Simulation Projection Library</h1>
+  <p>Merger with BH + Cosmic Rays simulations — Dominguez-Fernandez et al. 2024</p>
+</header>
+
+<div id="controls">
+  <div>
+    <label for="f-sim">Simulation</label>
+    <select id="f-sim">
+      <option value="">All</option>
+<option value="r0p2_theta10">r0p2_theta10</option>
+<option value="r0p2_theta10_jetdir-y">r0p2_theta10_jetdir-y</option>
+<option value="r0p2_theta10_jetdir-z">r0p2_theta10_jetdir-z</option>
+<option value="r0p2_theta10_start1000Myr">r0p2_theta10_start1000Myr</option>
+<option value="r0p2_theta10_start1000Myr-y">r0p2_theta10_start1000Myr-y</option>
+<option value="r0p2_theta10_start1000Myr-z">r0p2_theta10_start1000Myr-z</option>
+<option value="r0p2_theta10_start2000Myr">r0p2_theta10_start2000Myr</option>
+<option value="r0p2_theta10_start2000Myr-y">r0p2_theta10_start2000Myr-y</option>
+<option value="r0p2_theta10_start2000Myr-z">r0p2_theta10_start2000Myr-z</option>
+<option value="r0p2_theta10_start5000Myr">r0p2_theta10_start5000Myr</option>
+<option value="r0p2_theta10_start5000Myr-y">r0p2_theta10_start5000Myr-y</option>
+<option value="r0p2_theta10_start5000Myr-z">r0p2_theta10_start5000Myr-z</option>
+<option value="r0p5_theta10">r0p5_theta10</option>
+<option value="r0p5_theta10_jetdir-y">r0p5_theta10_jetdir-y</option>
+<option value="r0p5_theta10_jetdir-z">r0p5_theta10_jetdir-z</option>
+<option value="r0p5_theta10_start1000Myr">r0p5_theta10_start1000Myr</option>
+<option value="r0p5_theta10_start1000Myr-y">r0p5_theta10_start1000Myr-y</option>
+<option value="r0p5_theta10_start1000Myr-z">r0p5_theta10_start1000Myr-z</option>
+<option value="r0p5_theta10_start2000Myr">r0p5_theta10_start2000Myr</option>
+<option value="r0p5_theta10_start2000Myr-y">r0p5_theta10_start2000Myr-y</option>
+<option value="r0p5_theta10_start2000Myr-z">r0p5_theta10_start2000Myr-z</option>
+<option value="r0p5_theta10_start5000Myr">r0p5_theta10_start5000Myr</option>
+<option value="r0p5_theta10_start5000Myr-y">r0p5_theta10_start5000Myr-y</option>
+<option value="r0p5_theta10_start5000Myr-z">r0p5_theta10_start5000Myr-z</option>
+    </select>
+  </div>
+  <div>
+    <label for="f-dir">Projection direction</label>
+    <select id="f-dir">
+      <option value="">All</option>
+<option value="proj-z">Projection along Z</option>
+    </select>
+  </div>
+  <div>
+    <label for="f-field">Field</label>
+    <select id="f-field">
+      <option value="">All</option>
+<option value="cosmic_ray_energy_density">CR Energy Density</option>
+<option value="cosmic_ray_pressure">CR Pressure</option>
+<option value="density">Gas Density</option>
+<option value="magnetic_field_strength">Magnetic Field</option>
+<option value="temperature">Temperature</option>
+    </select>
+  </div>
+  <div>
+    <label for="f-snap">Snapshot</label>
+    <select id="f-snap">
+      <option value="">All</option>
+<option value="30">snap 030</option>
+<option value="46">snap 046</option>
+<option value="63">snap 063</option>
+<option value="67">snap 067</option>
+<option value="83">snap 083</option>
+<option value="87">snap 087</option>
+<option value="90">snap 090</option>
+<option value="100">snap 100</option>
+    </select>
+  </div>
+  <div style="display:flex; align-items:flex-end;">
+    <button onclick="resetFilters()"
+      style="background:#e94560;border:none;color:white;padding:5px 14px;
+             border-radius:4px;cursor:pointer;font-size:0.85rem;">
+      Reset
+    </button>
+  </div>
+</div>
+
+<div id="count"></div>
+
+<div id="gallery">
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="30">
+  <a href="r0p2_theta10/proj-z/cosmic_ray_energy_density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/cosmic_ray_energy_density/snap_030.png" alt="r0p2_theta10 | Projection along Z | CR Energy Density | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | CR Energy Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="67">
+  <a href="r0p2_theta10/proj-z/cosmic_ray_energy_density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/cosmic_ray_energy_density/snap_067.png" alt="r0p2_theta10 | Projection along Z | CR Energy Density | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | CR Energy Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="30">
+  <a href="r0p2_theta10/proj-z/cosmic_ray_pressure/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/cosmic_ray_pressure/snap_030.png" alt="r0p2_theta10 | Projection along Z | CR Pressure | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | CR Pressure | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="67">
+  <a href="r0p2_theta10/proj-z/cosmic_ray_pressure/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/cosmic_ray_pressure/snap_067.png" alt="r0p2_theta10 | Projection along Z | CR Pressure | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | CR Pressure | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="density" data-snap="30">
+  <a href="r0p2_theta10/proj-z/density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/density/snap_030.png" alt="r0p2_theta10 | Projection along Z | Gas Density | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | Gas Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="density" data-snap="67">
+  <a href="r0p2_theta10/proj-z/density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/density/snap_067.png" alt="r0p2_theta10 | Projection along Z | Gas Density | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | Gas Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="30">
+  <a href="r0p2_theta10/proj-z/magnetic_field_strength/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/magnetic_field_strength/snap_030.png" alt="r0p2_theta10 | Projection along Z | Magnetic Field | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | Magnetic Field | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="67">
+  <a href="r0p2_theta10/proj-z/magnetic_field_strength/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/magnetic_field_strength/snap_067.png" alt="r0p2_theta10 | Projection along Z | Magnetic Field | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | Magnetic Field | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="temperature" data-snap="30">
+  <a href="r0p2_theta10/proj-z/temperature/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/temperature/snap_030.png" alt="r0p2_theta10 | Projection along Z | Temperature | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | Temperature | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10" data-direction="proj-z" data-field="temperature" data-snap="67">
+  <a href="r0p2_theta10/proj-z/temperature/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10/proj-z/temperature/snap_067.png" alt="r0p2_theta10 | Projection along Z | Temperature | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10 | Projection along Z | Temperature | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="30">
+  <a href="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_030.png" alt="r0p2_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="67">
+  <a href="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_067.png" alt="r0p2_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="30">
+  <a href="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_030.png" alt="r0p2_theta10_jetdir-y | Projection along Z | CR Pressure | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | CR Pressure | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="67">
+  <a href="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_067.png" alt="r0p2_theta10_jetdir-y | Projection along Z | CR Pressure | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | CR Pressure | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="density" data-snap="30">
+  <a href="r0p2_theta10_jetdir-y/proj-z/density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/density/snap_030.png" alt="r0p2_theta10_jetdir-y | Projection along Z | Gas Density | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | Gas Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="density" data-snap="67">
+  <a href="r0p2_theta10_jetdir-y/proj-z/density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/density/snap_067.png" alt="r0p2_theta10_jetdir-y | Projection along Z | Gas Density | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | Gas Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="30">
+  <a href="r0p2_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_030.png" alt="r0p2_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="67">
+  <a href="r0p2_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_067.png" alt="r0p2_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="temperature" data-snap="30">
+  <a href="r0p2_theta10_jetdir-y/proj-z/temperature/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/temperature/snap_030.png" alt="r0p2_theta10_jetdir-y | Projection along Z | Temperature | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | Temperature | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-y" data-direction="proj-z" data-field="temperature" data-snap="67">
+  <a href="r0p2_theta10_jetdir-y/proj-z/temperature/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-y/proj-z/temperature/snap_067.png" alt="r0p2_theta10_jetdir-y | Projection along Z | Temperature | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-y | Projection along Z | Temperature | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="30">
+  <a href="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_030.png" alt="r0p2_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="67">
+  <a href="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_067.png" alt="r0p2_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="30">
+  <a href="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_030.png" alt="r0p2_theta10_jetdir-z | Projection along Z | CR Pressure | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | CR Pressure | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="67">
+  <a href="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_067.png" alt="r0p2_theta10_jetdir-z | Projection along Z | CR Pressure | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | CR Pressure | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="density" data-snap="30">
+  <a href="r0p2_theta10_jetdir-z/proj-z/density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/density/snap_030.png" alt="r0p2_theta10_jetdir-z | Projection along Z | Gas Density | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | Gas Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="density" data-snap="67">
+  <a href="r0p2_theta10_jetdir-z/proj-z/density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/density/snap_067.png" alt="r0p2_theta10_jetdir-z | Projection along Z | Gas Density | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | Gas Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="30">
+  <a href="r0p2_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_030.png" alt="r0p2_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="67">
+  <a href="r0p2_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_067.png" alt="r0p2_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="temperature" data-snap="30">
+  <a href="r0p2_theta10_jetdir-z/proj-z/temperature/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/temperature/snap_030.png" alt="r0p2_theta10_jetdir-z | Projection along Z | Temperature | snap 030">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | Temperature | snap 030</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_jetdir-z" data-direction="proj-z" data-field="temperature" data-snap="67">
+  <a href="r0p2_theta10_jetdir-z/proj-z/temperature/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_jetdir-z/proj-z/temperature/snap_067.png" alt="r0p2_theta10_jetdir-z | Projection along Z | Temperature | snap 067">
+  </a>
+  <p class="caption">r0p2_theta10_jetdir-z | Projection along Z | Temperature | snap 067</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_046.png" alt="r0p2_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_083.png" alt="r0p2_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_046.png" alt="r0p2_theta10_start1000Myr | Projection along Z | CR Pressure | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | CR Pressure | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_083.png" alt="r0p2_theta10_start1000Myr | Projection along Z | CR Pressure | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | CR Pressure | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="density" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr/proj-z/density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/density/snap_046.png" alt="r0p2_theta10_start1000Myr | Projection along Z | Gas Density | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | Gas Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="density" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr/proj-z/density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/density/snap_083.png" alt="r0p2_theta10_start1000Myr | Projection along Z | Gas Density | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | Gas Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_046.png" alt="r0p2_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_083.png" alt="r0p2_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="temperature" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr/proj-z/temperature/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/temperature/snap_046.png" alt="r0p2_theta10_start1000Myr | Projection along Z | Temperature | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | Temperature | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr" data-direction="proj-z" data-field="temperature" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr/proj-z/temperature/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr/proj-z/temperature/snap_083.png" alt="r0p2_theta10_start1000Myr | Projection along Z | Temperature | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr | Projection along Z | Temperature | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_046.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_083.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_046.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_083.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="density" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/density/snap_046.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="density" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/density/snap_083.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_046.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_083.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/temperature/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/temperature/snap_046.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | Temperature | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | Temperature | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-y/proj-z/temperature/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-y/proj-z/temperature/snap_083.png" alt="r0p2_theta10_start1000Myr-y | Projection along Z | Temperature | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-y | Projection along Z | Temperature | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_046.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_083.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_046.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_083.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="density" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/density/snap_046.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="density" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/density/snap_083.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_046.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_083.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="46">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/temperature/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/temperature/snap_046.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | Temperature | snap 046">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | Temperature | snap 046</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start1000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="83">
+  <a href="r0p2_theta10_start1000Myr-z/proj-z/temperature/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start1000Myr-z/proj-z/temperature/snap_083.png" alt="r0p2_theta10_start1000Myr-z | Projection along Z | Temperature | snap 083">
+  </a>
+  <p class="caption">r0p2_theta10_start1000Myr-z | Projection along Z | Temperature | snap 083</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p2_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_100.png" alt="r0p2_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p2_theta10_start2000Myr | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_100.png" alt="r0p2_theta10_start2000Myr | Projection along Z | CR Pressure | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | CR Pressure | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/density/snap_063.png" alt="r0p2_theta10_start2000Myr | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="density" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr/proj-z/density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/density/snap_100.png" alt="r0p2_theta10_start2000Myr | Projection along Z | Gas Density | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | Gas Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_063.png" alt="r0p2_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_100.png" alt="r0p2_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/temperature/snap_063.png" alt="r0p2_theta10_start2000Myr | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr" data-direction="proj-z" data-field="temperature" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr/proj-z/temperature/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr/proj-z/temperature/snap_100.png" alt="r0p2_theta10_start2000Myr | Projection along Z | Temperature | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr | Projection along Z | Temperature | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_100.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_100.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/density/snap_063.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="density" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/density/snap_100.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_063.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_100.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/temperature/snap_063.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-y/proj-z/temperature/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-y/proj-z/temperature/snap_100.png" alt="r0p2_theta10_start2000Myr-y | Projection along Z | Temperature | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-y | Projection along Z | Temperature | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_100.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_100.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/density/snap_063.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="density" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/density/snap_100.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_063.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_100.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/temperature/snap_063.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start2000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="100">
+  <a href="r0p2_theta10_start2000Myr-z/proj-z/temperature/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start2000Myr-z/proj-z/temperature/snap_100.png" alt="r0p2_theta10_start2000Myr-z | Projection along Z | Temperature | snap 100">
+  </a>
+  <p class="caption">r0p2_theta10_start2000Myr-z | Projection along Z | Temperature | snap 100</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p2_theta10_start5000Myr | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_energy_density/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_energy_density/snap_087.png" alt="r0p2_theta10_start5000Myr | Projection along Z | CR Energy Density | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | CR Energy Density | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p2_theta10_start5000Myr | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_pressure/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/cosmic_ray_pressure/snap_087.png" alt="r0p2_theta10_start5000Myr | Projection along Z | CR Pressure | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | CR Pressure | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/density/snap_063.png" alt="r0p2_theta10_start5000Myr | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="density" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr/proj-z/density/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/density/snap_087.png" alt="r0p2_theta10_start5000Myr | Projection along Z | Gas Density | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | Gas Density | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/magnetic_field_strength/snap_063.png" alt="r0p2_theta10_start5000Myr | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr/proj-z/magnetic_field_strength/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/magnetic_field_strength/snap_087.png" alt="r0p2_theta10_start5000Myr | Projection along Z | Magnetic Field | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | Magnetic Field | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/temperature/snap_063.png" alt="r0p2_theta10_start5000Myr | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr" data-direction="proj-z" data-field="temperature" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr/proj-z/temperature/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr/proj-z/temperature/snap_087.png" alt="r0p2_theta10_start5000Myr | Projection along Z | Temperature | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr | Projection along Z | Temperature | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_energy_density/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_energy_density/snap_087.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | CR Energy Density | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | CR Energy Density | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_pressure/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/cosmic_ray_pressure/snap_087.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | CR Pressure | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | CR Pressure | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/density/snap_063.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="density" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/density/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/density/snap_087.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | Gas Density | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | Gas Density | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/magnetic_field_strength/snap_063.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/magnetic_field_strength/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/magnetic_field_strength/snap_087.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | Magnetic Field | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | Magnetic Field | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/temperature/snap_063.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-y/proj-z/temperature/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-y/proj-z/temperature/snap_087.png" alt="r0p2_theta10_start5000Myr-y | Projection along Z | Temperature | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-y | Projection along Z | Temperature | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_energy_density/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_energy_density/snap_087.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | CR Energy Density | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | CR Energy Density | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_pressure/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/cosmic_ray_pressure/snap_087.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | CR Pressure | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | CR Pressure | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/density/snap_063.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="density" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/density/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/density/snap_087.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | Gas Density | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | Gas Density | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/magnetic_field_strength/snap_063.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/magnetic_field_strength/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/magnetic_field_strength/snap_087.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | Magnetic Field | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | Magnetic Field | snap 087</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/temperature/snap_063.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p2_theta10_start5000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="87">
+  <a href="r0p2_theta10_start5000Myr-z/proj-z/temperature/snap_087.png" target="_blank">
+    <img loading="lazy" src="r0p2_theta10_start5000Myr-z/proj-z/temperature/snap_087.png" alt="r0p2_theta10_start5000Myr-z | Projection along Z | Temperature | snap 087">
+  </a>
+  <p class="caption">r0p2_theta10_start5000Myr-z | Projection along Z | Temperature | snap 087</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="30">
+  <a href="r0p5_theta10/proj-z/cosmic_ray_energy_density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/cosmic_ray_energy_density/snap_030.png" alt="r0p5_theta10 | Projection along Z | CR Energy Density | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | CR Energy Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="67">
+  <a href="r0p5_theta10/proj-z/cosmic_ray_energy_density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/cosmic_ray_energy_density/snap_067.png" alt="r0p5_theta10 | Projection along Z | CR Energy Density | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | CR Energy Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="30">
+  <a href="r0p5_theta10/proj-z/cosmic_ray_pressure/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/cosmic_ray_pressure/snap_030.png" alt="r0p5_theta10 | Projection along Z | CR Pressure | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | CR Pressure | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="67">
+  <a href="r0p5_theta10/proj-z/cosmic_ray_pressure/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/cosmic_ray_pressure/snap_067.png" alt="r0p5_theta10 | Projection along Z | CR Pressure | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | CR Pressure | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="density" data-snap="30">
+  <a href="r0p5_theta10/proj-z/density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/density/snap_030.png" alt="r0p5_theta10 | Projection along Z | Gas Density | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | Gas Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="density" data-snap="67">
+  <a href="r0p5_theta10/proj-z/density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/density/snap_067.png" alt="r0p5_theta10 | Projection along Z | Gas Density | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | Gas Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="30">
+  <a href="r0p5_theta10/proj-z/magnetic_field_strength/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/magnetic_field_strength/snap_030.png" alt="r0p5_theta10 | Projection along Z | Magnetic Field | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | Magnetic Field | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="67">
+  <a href="r0p5_theta10/proj-z/magnetic_field_strength/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/magnetic_field_strength/snap_067.png" alt="r0p5_theta10 | Projection along Z | Magnetic Field | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | Magnetic Field | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="temperature" data-snap="30">
+  <a href="r0p5_theta10/proj-z/temperature/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/temperature/snap_030.png" alt="r0p5_theta10 | Projection along Z | Temperature | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | Temperature | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10" data-direction="proj-z" data-field="temperature" data-snap="67">
+  <a href="r0p5_theta10/proj-z/temperature/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10/proj-z/temperature/snap_067.png" alt="r0p5_theta10 | Projection along Z | Temperature | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10 | Projection along Z | Temperature | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="30">
+  <a href="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_030.png" alt="r0p5_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="67">
+  <a href="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_energy_density/snap_067.png" alt="r0p5_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | CR Energy Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="30">
+  <a href="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_030.png" alt="r0p5_theta10_jetdir-y | Projection along Z | CR Pressure | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | CR Pressure | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="67">
+  <a href="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/cosmic_ray_pressure/snap_067.png" alt="r0p5_theta10_jetdir-y | Projection along Z | CR Pressure | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | CR Pressure | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="density" data-snap="30">
+  <a href="r0p5_theta10_jetdir-y/proj-z/density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/density/snap_030.png" alt="r0p5_theta10_jetdir-y | Projection along Z | Gas Density | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | Gas Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="density" data-snap="67">
+  <a href="r0p5_theta10_jetdir-y/proj-z/density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/density/snap_067.png" alt="r0p5_theta10_jetdir-y | Projection along Z | Gas Density | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | Gas Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="30">
+  <a href="r0p5_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_030.png" alt="r0p5_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="67">
+  <a href="r0p5_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/magnetic_field_strength/snap_067.png" alt="r0p5_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | Magnetic Field | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="temperature" data-snap="30">
+  <a href="r0p5_theta10_jetdir-y/proj-z/temperature/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/temperature/snap_030.png" alt="r0p5_theta10_jetdir-y | Projection along Z | Temperature | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | Temperature | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-y" data-direction="proj-z" data-field="temperature" data-snap="67">
+  <a href="r0p5_theta10_jetdir-y/proj-z/temperature/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-y/proj-z/temperature/snap_067.png" alt="r0p5_theta10_jetdir-y | Projection along Z | Temperature | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-y | Projection along Z | Temperature | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="30">
+  <a href="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_030.png" alt="r0p5_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="67">
+  <a href="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_energy_density/snap_067.png" alt="r0p5_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | CR Energy Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="30">
+  <a href="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_030.png" alt="r0p5_theta10_jetdir-z | Projection along Z | CR Pressure | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | CR Pressure | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="67">
+  <a href="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/cosmic_ray_pressure/snap_067.png" alt="r0p5_theta10_jetdir-z | Projection along Z | CR Pressure | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | CR Pressure | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="density" data-snap="30">
+  <a href="r0p5_theta10_jetdir-z/proj-z/density/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/density/snap_030.png" alt="r0p5_theta10_jetdir-z | Projection along Z | Gas Density | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | Gas Density | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="density" data-snap="67">
+  <a href="r0p5_theta10_jetdir-z/proj-z/density/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/density/snap_067.png" alt="r0p5_theta10_jetdir-z | Projection along Z | Gas Density | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | Gas Density | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="30">
+  <a href="r0p5_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_030.png" alt="r0p5_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="67">
+  <a href="r0p5_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/magnetic_field_strength/snap_067.png" alt="r0p5_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | Magnetic Field | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="temperature" data-snap="30">
+  <a href="r0p5_theta10_jetdir-z/proj-z/temperature/snap_030.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/temperature/snap_030.png" alt="r0p5_theta10_jetdir-z | Projection along Z | Temperature | snap 030">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | Temperature | snap 030</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_jetdir-z" data-direction="proj-z" data-field="temperature" data-snap="67">
+  <a href="r0p5_theta10_jetdir-z/proj-z/temperature/snap_067.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_jetdir-z/proj-z/temperature/snap_067.png" alt="r0p5_theta10_jetdir-z | Projection along Z | Temperature | snap 067">
+  </a>
+  <p class="caption">r0p5_theta10_jetdir-z | Projection along Z | Temperature | snap 067</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_046.png" alt="r0p5_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_energy_density/snap_083.png" alt="r0p5_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | CR Energy Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_046.png" alt="r0p5_theta10_start1000Myr | Projection along Z | CR Pressure | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | CR Pressure | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/cosmic_ray_pressure/snap_083.png" alt="r0p5_theta10_start1000Myr | Projection along Z | CR Pressure | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | CR Pressure | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="density" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr/proj-z/density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/density/snap_046.png" alt="r0p5_theta10_start1000Myr | Projection along Z | Gas Density | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | Gas Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="density" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr/proj-z/density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/density/snap_083.png" alt="r0p5_theta10_start1000Myr | Projection along Z | Gas Density | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | Gas Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_046.png" alt="r0p5_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/magnetic_field_strength/snap_083.png" alt="r0p5_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | Magnetic Field | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="temperature" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr/proj-z/temperature/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/temperature/snap_046.png" alt="r0p5_theta10_start1000Myr | Projection along Z | Temperature | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | Temperature | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr" data-direction="proj-z" data-field="temperature" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr/proj-z/temperature/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr/proj-z/temperature/snap_083.png" alt="r0p5_theta10_start1000Myr | Projection along Z | Temperature | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr | Projection along Z | Temperature | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_046.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_energy_density/snap_083.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | CR Energy Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_046.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/cosmic_ray_pressure/snap_083.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | CR Pressure | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="density" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/density/snap_046.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="density" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/density/snap_083.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | Gas Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_046.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/magnetic_field_strength/snap_083.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | Magnetic Field | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/temperature/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/temperature/snap_046.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | Temperature | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | Temperature | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-y/proj-z/temperature/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-y/proj-z/temperature/snap_083.png" alt="r0p5_theta10_start1000Myr-y | Projection along Z | Temperature | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-y | Projection along Z | Temperature | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_046.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_energy_density/snap_083.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | CR Energy Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_046.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/cosmic_ray_pressure/snap_083.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | CR Pressure | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="density" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/density/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/density/snap_046.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="density" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/density/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/density/snap_083.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | Gas Density | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_046.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/magnetic_field_strength/snap_083.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | Magnetic Field | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="46">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/temperature/snap_046.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/temperature/snap_046.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | Temperature | snap 046">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | Temperature | snap 046</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start1000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="83">
+  <a href="r0p5_theta10_start1000Myr-z/proj-z/temperature/snap_083.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start1000Myr-z/proj-z/temperature/snap_083.png" alt="r0p5_theta10_start1000Myr-z | Projection along Z | Temperature | snap 083">
+  </a>
+  <p class="caption">r0p5_theta10_start1000Myr-z | Projection along Z | Temperature | snap 083</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p5_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_energy_density/snap_100.png" alt="r0p5_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | CR Energy Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p5_theta10_start2000Myr | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/cosmic_ray_pressure/snap_100.png" alt="r0p5_theta10_start2000Myr | Projection along Z | CR Pressure | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | CR Pressure | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/density/snap_063.png" alt="r0p5_theta10_start2000Myr | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="density" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr/proj-z/density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/density/snap_100.png" alt="r0p5_theta10_start2000Myr | Projection along Z | Gas Density | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | Gas Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_063.png" alt="r0p5_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/magnetic_field_strength/snap_100.png" alt="r0p5_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | Magnetic Field | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/temperature/snap_063.png" alt="r0p5_theta10_start2000Myr | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr" data-direction="proj-z" data-field="temperature" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr/proj-z/temperature/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr/proj-z/temperature/snap_100.png" alt="r0p5_theta10_start2000Myr | Projection along Z | Temperature | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr | Projection along Z | Temperature | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_energy_density/snap_100.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | CR Energy Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/cosmic_ray_pressure/snap_100.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | CR Pressure | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/density/snap_063.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="density" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/density/snap_100.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | Gas Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_063.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/magnetic_field_strength/snap_100.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | Magnetic Field | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/temperature/snap_063.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-y/proj-z/temperature/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-y/proj-z/temperature/snap_100.png" alt="r0p5_theta10_start2000Myr-y | Projection along Z | Temperature | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-y | Projection along Z | Temperature | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_063.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_energy_density/snap_100.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | CR Energy Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_063.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/cosmic_ray_pressure/snap_100.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | CR Pressure | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="density" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/density/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/density/snap_063.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="density" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/density/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/density/snap_100.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | Gas Density | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_063.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/magnetic_field_strength/snap_100.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | Magnetic Field | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="63">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/temperature/snap_063.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/temperature/snap_063.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | Temperature | snap 063">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | Temperature | snap 063</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start2000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="100">
+  <a href="r0p5_theta10_start2000Myr-z/proj-z/temperature/snap_100.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start2000Myr-z/proj-z/temperature/snap_100.png" alt="r0p5_theta10_start2000Myr-z | Projection along Z | Temperature | snap 100">
+  </a>
+  <p class="caption">r0p5_theta10_start2000Myr-z | Projection along Z | Temperature | snap 100</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr/proj-z/cosmic_ray_energy_density/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr/proj-z/cosmic_ray_energy_density/snap_090.png" alt="r0p5_theta10_start5000Myr | Projection along Z | CR Energy Density | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr | Projection along Z | CR Energy Density | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr/proj-z/cosmic_ray_pressure/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr/proj-z/cosmic_ray_pressure/snap_090.png" alt="r0p5_theta10_start5000Myr | Projection along Z | CR Pressure | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr | Projection along Z | CR Pressure | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr" data-direction="proj-z" data-field="density" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr/proj-z/density/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr/proj-z/density/snap_090.png" alt="r0p5_theta10_start5000Myr | Projection along Z | Gas Density | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr | Projection along Z | Gas Density | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr/proj-z/magnetic_field_strength/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr/proj-z/magnetic_field_strength/snap_090.png" alt="r0p5_theta10_start5000Myr | Projection along Z | Magnetic Field | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr | Projection along Z | Magnetic Field | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr" data-direction="proj-z" data-field="temperature" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr/proj-z/temperature/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr/proj-z/temperature/snap_090.png" alt="r0p5_theta10_start5000Myr | Projection along Z | Temperature | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr | Projection along Z | Temperature | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-y" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-y/proj-z/cosmic_ray_energy_density/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-y/proj-z/cosmic_ray_energy_density/snap_090.png" alt="r0p5_theta10_start5000Myr-y | Projection along Z | CR Energy Density | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-y | Projection along Z | CR Energy Density | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-y" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-y/proj-z/cosmic_ray_pressure/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-y/proj-z/cosmic_ray_pressure/snap_090.png" alt="r0p5_theta10_start5000Myr-y | Projection along Z | CR Pressure | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-y | Projection along Z | CR Pressure | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-y" data-direction="proj-z" data-field="density" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-y/proj-z/density/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-y/proj-z/density/snap_090.png" alt="r0p5_theta10_start5000Myr-y | Projection along Z | Gas Density | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-y | Projection along Z | Gas Density | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-y" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-y/proj-z/magnetic_field_strength/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-y/proj-z/magnetic_field_strength/snap_090.png" alt="r0p5_theta10_start5000Myr-y | Projection along Z | Magnetic Field | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-y | Projection along Z | Magnetic Field | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-y" data-direction="proj-z" data-field="temperature" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-y/proj-z/temperature/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-y/proj-z/temperature/snap_090.png" alt="r0p5_theta10_start5000Myr-y | Projection along Z | Temperature | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-y | Projection along Z | Temperature | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-z" data-direction="proj-z" data-field="cosmic_ray_energy_density" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-z/proj-z/cosmic_ray_energy_density/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-z/proj-z/cosmic_ray_energy_density/snap_090.png" alt="r0p5_theta10_start5000Myr-z | Projection along Z | CR Energy Density | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-z | Projection along Z | CR Energy Density | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-z" data-direction="proj-z" data-field="cosmic_ray_pressure" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-z/proj-z/cosmic_ray_pressure/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-z/proj-z/cosmic_ray_pressure/snap_090.png" alt="r0p5_theta10_start5000Myr-z | Projection along Z | CR Pressure | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-z | Projection along Z | CR Pressure | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-z" data-direction="proj-z" data-field="density" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-z/proj-z/density/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-z/proj-z/density/snap_090.png" alt="r0p5_theta10_start5000Myr-z | Projection along Z | Gas Density | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-z | Projection along Z | Gas Density | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-z" data-direction="proj-z" data-field="magnetic_field_strength" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-z/proj-z/magnetic_field_strength/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-z/proj-z/magnetic_field_strength/snap_090.png" alt="r0p5_theta10_start5000Myr-z | Projection along Z | Magnetic Field | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-z | Projection along Z | Magnetic Field | snap 090</p>
+</div>
+<div class="card" data-sim="r0p5_theta10_start5000Myr-z" data-direction="proj-z" data-field="temperature" data-snap="90">
+  <a href="r0p5_theta10_start5000Myr-z/proj-z/temperature/snap_090.png" target="_blank">
+    <img loading="lazy" src="r0p5_theta10_start5000Myr-z/proj-z/temperature/snap_090.png" alt="r0p5_theta10_start5000Myr-z | Projection along Z | Temperature | snap 090">
+  </a>
+  <p class="caption">r0p5_theta10_start5000Myr-z | Projection along Z | Temperature | snap 090</p>
+</div>
+</div>
+
+<script>
+function applyFilters() {
+  const sim   = document.getElementById('f-sim').value;
+  const dir   = document.getElementById('f-dir').value;
+  const field = document.getElementById('f-field').value;
+  const snap  = document.getElementById('f-snap').value;
+
+  let visible = 0;
+  document.querySelectorAll('.card').forEach(card => {
+    const match =
+      (!sim   || card.dataset.sim       === sim)   &&
+      (!dir   || card.dataset.direction === dir)   &&
+      (!field || card.dataset.field     === field) &&
+      (!snap  || card.dataset.snap      === snap);
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+  document.getElementById('count').textContent =
+    `Showing ${visible} of 225 images`;
+}
+
+function resetFilters() {
+  ['f-sim','f-dir','f-field','f-snap'].forEach(id =>
+    document.getElementById(id).value = '');
+  applyFilters();
+}
+
+['f-sim','f-dir','f-field','f-snap'].forEach(id =>
+  document.getElementById(id).addEventListener('change', applyFilters));
+
+applyFilters();
+</script>
+</body>
+</html>
