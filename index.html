@@ -109,7 +109,7 @@
 <option value="early">Early (τ < 1 Gyr)</option>
 <option value="mid-early">Mid-early (1–2 Gyr)</option>
 <option value="mid-late">Mid-late (2–4 Gyr)</option>
-<option value="late">Late (τ ≥ 4 Gyr)</option>
+<option value="late" selected>Late (τ ≥ 4 Gyr)</option>
     </select>
   </div>
   <div style="display:flex; align-items:flex-end;">
@@ -12721,6 +12721,7 @@ function applyFilters() {
 function resetFilters() {
   FILTER_IDS.forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-field').value = 'cosmic_ray_energy_density';
+  document.getElementById('f-stage').value = 'late';
   applyFilters();
 }
 
